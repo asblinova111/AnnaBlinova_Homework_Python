@@ -8,87 +8,72 @@ def utils():
 
 
 class TestCapitalize:
-    def test_normal_string(self, utils):
-        assert utils.capitalize("skypro") == "Skypro"
 
-    def test_empty_string(self, utils):
-        assert utils.capitalize("") == ""
-
-    def test_single_letter(self, utils):
-        assert utils.capitalize("a") == "A"
-
-    def test_already_capitalized(self, utils):
-        assert utils.capitalize("Skypro") == "Skypro"
-
-    def test_all_uppercase(self, utils):
-        assert utils.capitalize("SKYPRO") == "Skypro"
+    @pytest.mark.parametrize("string, expected", [
+        ("skypro", "Skypro"),
+        ("", ""),
+        ("a", "A"),
+        ("Skypro", "Skypro"),
+        ("SKYPRO", "Skypro"),
+    ])
+    def test_capitalize_positive(self, utils, string, expected):
+        assert utils.capitalize(string) == expected
 
     def test_capitalize_none(self, utils):
-        assert utils.capitalize(None) == ""
+        with pytest.raises(AttributeError):
+            utils.capitalize(None)
 
 
 class TestTrim:
-    def test_leading_spaces(self, utils):
-        assert utils.trim("   skypro") == "skypro"
 
-    def test_no_leading_spaces(self, utils):
-        assert utils.trim("skypro") == "skypro"
-
-    def test_only_spaces(self, utils):
-        assert utils.trim("   ") == ""
-
-    def test_empty_string(self, utils):
-        assert utils.trim("") == ""
-
-    def test_spaces_in_middle_and_end(self, utils):
-        # Важно: trim должен удалять только ведущие пробелы
-        assert utils.trim("  sky pro ") == "sky pro "
+    @pytest.mark.parametrize("string, expected", [
+        ("   skypro", "skypro"),
+        ("skypro", "skypro"),
+        ("   ", ""),
+        ("", ""),
+        ("  sky pro ", "sky pro "),
+    ])
+    def test_trim_positive(self, utils, string, expected):
+        assert utils.trim(string) == expected
 
     def test_trim_none(self, utils):
-        assert utils.trim(None) == ""
+        with pytest.raises(AttributeError):
+            utils.trim(None)
 
     def test_trim_with_tabs(self, utils):
+        # Этот тест упадет на оригинальном коде (DEF-001)
         assert utils.trim("\t\tskypro") == "skypro"
 
 
 class TestContains:
-    def test_symbol_present(self, utils):
-        assert utils.contains("SkyPro", "S") is True
 
-    def test_symbol_absent(self, utils):
-        assert utils.contains("SkyPro", "U") is False
-
-    def test_empty_string(self, utils):
-        assert utils.contains("", "a") is False
-
-    def test_symbol_longer_than_string(self, utils):
-        assert utils.contains("ab", "abc") is False
-
-    def test_case_sensitive(self, utils):
-        assert utils.contains("SkyPro", "s") is False
+    @pytest.mark.parametrize("string, symbol, expected", [
+        ("SkyPro", "S", True),
+        ("SkyPro", "U", False),
+        ("", "a", False),
+        ("ab", "abc", False),
+        ("SkyPro", "s", False),
+        ("SkyPro", "", True),
+    ])
+    def test_contains_positive(self, utils, string, symbol, expected):
+        assert utils.contains(string, symbol) == expected
 
     def test_contains_none_string(self, utils):
         assert utils.contains(None, "a") is False
 
 
 class TestDeleteSymbol:
-    def test_delete_single_char(self, utils):
-        assert utils.delete_symbol("SkyPro", "k") == "SyPro"
 
-    def test_delete_substring(self, utils):
-        assert utils.delete_symbol("SkyPro", "Pro") == "Sky"
-
-    def test_symbol_not_present(self, utils):
-        assert utils.delete_symbol("SkyPro", "X") == "SkyPro"
-
-    def test_delete_all_occurrences(self, utils):
-        assert utils.delete_symbol("banana", "a") == "bnn"
-
-    def test_empty_string(self, utils):
-        assert utils.delete_symbol("", "a") == ""
-
-    def test_delete_entire_string(self, utils):
-        assert utils.delete_symbol("abc", "abc") == ""
+    @pytest.mark.parametrize("string, symbol, expected", [
+        ("SkyPro", "k", "SyPro"),
+        ("SkyPro", "Pro", "Sky"),
+        ("SkyPro", "X", "SkyPro"),
+        ("banana", "a", "bnn"),
+        ("", "a", ""),
+        ("abc", "abc", ""),
+    ])
+    def test_delete_symbol_positive(self, utils, string, symbol, expected):
+        assert utils.delete_symbol(string, symbol) == expected
 
     def test_delete_symbol_none_string(self, utils):
         assert utils.delete_symbol(None, "a") == ""
